@@ -16,8 +16,8 @@ public class ReadWebPage
         
         final ReadWebPage scraper = new ReadWebPage();
         final String htmlContent = scraper.getContent();
-        final String extractedTitle = scraper.extractTitle(htmlContent);
-        System.out.println(extractedTitle);
+        final String extractRecipeUrl = scraper.extractRecipeUrl(htmlContent);
+        System.out.println(extractRecipeUrl);
     }
         
    
@@ -41,8 +41,8 @@ public class ReadWebPage
      return null;   
     }
 
-    private String extractTitle(String content) {
-        final Pattern titleRegExp = Pattern.compile("<title>(.*?)</title>", Pattern.DOTALL);
+    private String extractRecipeUrl(String content) {
+        final Pattern titleRegExp = Pattern.compile("<a class=\"thumb-link\" href=\"(.*?)\" title", Pattern.DOTALL);
         final Matcher matcher = titleRegExp.matcher(content);
         matcher.find();
         return matcher.group(1);
