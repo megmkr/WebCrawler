@@ -42,8 +42,8 @@ public class ReadWebPage
     }
 
     private String extractRecipeUrl(String content) {
-        final Pattern titleRegExp = Pattern.compile("<a class=\"thumb-link\" href=\"(.*?)\" title", Pattern.DOTALL);
-        final Matcher matcher = titleRegExp.matcher(content);
+        final Pattern recipeUrlRegExp = Pattern.compile("<a class=\"thumb-link\" href=\"(.*?)\" title", Pattern.DOTALL);
+        final Matcher matcher = recipeUrlRegExp.matcher(content);
         matcher.find();
         return matcher.group(1);
     }
