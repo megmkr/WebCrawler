@@ -13,15 +13,20 @@ public class ReadWebPage
     public static void main(String[] args) throws IOException, InterruptedException 
     {
         
-        
         final ReadWebPage scraper = new ReadWebPage();
         final String htmlContent = scraper.getContent();
-        final String extractRecipeUrl = scraper.extractRecipeUrl(htmlContent);
-        System.out.println(extractRecipeUrl);
+        final String extractedRecipeUrl = scraper.extractRecipeUrl(htmlContent);
+        final String recipeContent = scraper.getRecipeContent();
+        final String extractAuthor = scraper.extractAuthor(recipeContent);
+        final String extractServings = scraper.extractServings(recipeContent);
+      
+        System.out.println(extractedRecipeUrl);
+        System.out.println(extractAuthor);
+        System.out.println(extractServings);
     }
         
    
-    
+    //gets html content for the page that shows all 24 recipes 
     private String getContent() throws IOException 
     {
       try
@@ -30,9 +35,7 @@ public class ReadWebPage
             String urlToScrape = "https://www.surlatable.com/recipes/?srule=best-matches&start=0&sz=24";
             HttpRequest request =  HttpRequest.newBuilder().uri(URI.create(urlToScrape)).build();
             HttpResponse<String> response = client.send(request,HttpResponse.BodyHandlers.ofString());
-           return response.body();
-
-      
+           return response.body();     
       }
       catch (InterruptedException e)
      {
@@ -40,11 +43,51 @@ public class ReadWebPage
      }
      return null;   
     }
-
+    
+    //extracts the individual recipe urls from the html content of the the page that shows all 24 recipes
     private String extractRecipeUrl(String content) {
         final Pattern recipeUrlRegExp = Pattern.compile("<a class=\"thumb-link\" href=\"(.*?)\" title", Pattern.DOTALL);
         final Matcher matcher = recipeUrlRegExp.matcher(content);
         matcher.find();
         return matcher.group(1);
     }
+    
+    //gets html content for the individual recipe pages
+    private String getRecipeContent() throws IOException
+    {
+      try
+      {
+        HttpClient client = HttpClient.newHttpClient();
+        String urlToScrape = "https://www.surlatable.com/pan-seared-scallops-with-prosecco-butter-sauce/REC-266244.html?cgid=recipes&start=0";
+        HttpRequest request =  HttpRequest.newBuilder().uri(URI.create(urlToScrape)).build();
+        HttpResponse<String> response = client.send(request,HttpResponse.BodyHandlers.ofString());
+        return response.body();      
+      }
+      catch (InterruptedException e)
+      {
+        System.out.println(e);
+      }
+    return null;   
+    }
+    
+    //extract the author for each recipe
+    private String extractAuthor(String content) 
+    {
+      //retrieve author 
+      final Pattern authorRegExp = Pattern.compile("<div class=\"recipe-author\">\n(.*?)\n</div>", Pattern.DOTALL);
+      final Matcher matcher = authorRegExp.matcher(content);
+      matcher.find();
+      return matcher.group(1);
+    }
+    
+    //extract the servings for each recipe 
+    private String extractServings(String content) 
+    {
+      //retrieve servings 
+      final Pattern servingsRegExp = Pattern.compile("<div class=\"recipe-details-serves\">\nMakes (.*?) servings\n</div>", Pattern.DOTALL);
+      final Matcher matcher = servingsRegExp.matcher(content);
+      matcher.find();
+      return matcher.group(1);
+    }
+
 }
