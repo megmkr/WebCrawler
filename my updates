@@ -170,7 +170,7 @@ public class ReadWebPage
       
       for(int i=0; i<4; i++)
       {
-         System.out.println(startz);
+         //System.out.println(startz);
          matcher.find(startz);
          group1 = matcher.group(1);
          startz = matcher.start()+50;
