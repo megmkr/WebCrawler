@@ -10,6 +10,7 @@ import java.util.regex.Pattern;
 import java.io.*;
 import java.util.*;
 import java.lang.String;
+import java.lang.Thread;
 
 public class ReadWebPage 
 {
@@ -53,10 +54,9 @@ public class ReadWebPage
           {
             //get first arraylist and then add recipe url to the filler arraylist 
             recipes.get(j).add(scraper.extractRecipeUrl(htmlContent));
-            final String recipeContent = scraper.getRecipeContent(recipes.get(i).get(0));
-            recipes.get(j).add(scraper.extractPath(recipeContent));
-            recipes.get(j).add(scraper.extractPath(recipeContent));
+            final String recipeContent = scraper.getRecipeContent(recipes.get(j).get(0));
             recipes.get(j).add(scraper.extractTitle(recipeContent));
+            recipes.get(j).add(scraper.extractPath(recipeContent));
             recipes.get(j).add(scraper.extractAuthor(recipeContent));
             recipes.get(j).add(scraper.extractServings(recipeContent));
             recipes.get(j).add(scraper.extractIngredients(recipeContent));
@@ -64,16 +64,18 @@ public class ReadWebPage
 
             if(j==23 || j== 47 || j==71)
                startx=0;
+            
+            Thread.sleep(10000);
           }
         }
         
-      System.out.println(recipes.get(1).get(0));
+      //System.out.println(recipes.get(1).get(0));
       /*System.out.println(recipes.get(0).get(2));
       System.out.println(recipes.get(0).get(3));
       System.out.println(recipes.get(0).get(4));
       System.out.println(recipes.get(0).get(5));*/
 
-      System.out.println(recipes.get(2).get(0));
+      //System.out.println(recipes.get(2).get(0));
       //System.out.println(recipes.get(23).get(0));
       //System.out.println(recipes.get(0).get(1));
       
@@ -88,7 +90,7 @@ public class ReadWebPage
         String toAdd = "";
         for(int a=0; a<size1; a++)
         {
-         for(int b=1; b<8; b++){
+         for(int b=1; b<7; b++){
             toAdd = recipes.get(a).get(b);
             
             toAdd = toAdd.replaceAll("<li>","");
@@ -97,6 +99,7 @@ public class ReadWebPage
             toAdd = toAdd.replaceAll("<b>","");
             toAdd = toAdd.replaceAll("</b>","");
             toAdd = toAdd.replaceAll("</ul>","");
+            toAdd = toAdd.replaceAll("<ul>","");
             toAdd = toAdd.replaceAll("<i>","");
             toAdd = toAdd.replaceAll("</i>","");
             toAdd = toAdd.replaceAll("&#188;","¼");
@@ -107,8 +110,7 @@ public class ReadWebPage
             file.append(DELIMITER);
 
          } 
-            file.append(SEPARATOR);      
-            
+            file.append(SEPARATOR);            
         
         }
         file.close();
@@ -182,10 +184,10 @@ public class ReadWebPage
       matcher.find();
       return matcher.group(1);
     }
-    //extract the servings for each recipe 
+    //extract the ingredients for each recipe 
     private String extractIngredients(String content) 
     {
-      final Pattern servingsRegExp = Pattern.compile("<div class=\"recipe-details-ingredients\">\n(.*?)\n</div>", Pattern.DOTALL);
+      final Pattern servingsRegExp = Pattern.compile("<div class=\"recipe-details-ingredients\">(.*?)\n</div>", Pattern.DOTALL);
       final Matcher matcher = servingsRegExp.matcher(content);
       matcher.find();
       return matcher.group(1);
