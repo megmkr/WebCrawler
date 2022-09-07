@@ -173,9 +173,10 @@ public class ReadWebPage
       {
          //System.out.println(startz);
          matcher.find(startz);
-         group1 = matcher.group(1);
+         group1 += matcher.group(1) + "/";
          startz = matcher.start()+50;
       }
+      path += group1;
       
       pathRegExp = Pattern.compile("<span class=\"breadcrumb-element\">(.*?)</span>", Pattern.DOTALL);
       matcher = pathRegExp.matcher(content);
@@ -184,7 +185,7 @@ public class ReadWebPage
       group2 = matcher.group(1);
       
 
-      path += group1 + "/" + group2 ;
+      path += group2 ;
 
          //servingsRegExp = Pattern.compile("\"primaryCategory\":\"(.*?)\"", Pattern.DOTALL);
      
