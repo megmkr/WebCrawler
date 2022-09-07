@@ -14,87 +14,111 @@ public class ReadWebPage
 {
    public static int startx = 0;
    public static String inputPageUrl;
-    public static void main(String[] args) throws IOException, InterruptedException 
-    {
-        ArrayList<String> pageUrls = new ArrayList<String>();
-        int pageNum = 4; 
-        String htmlContent;
-        String author; 
+   public static String htmlContent;
+   public static int startz = 0;
         
-        pageUrls.add("https://www.surlatable.com/recipes/?srule=best-matches&start=0&sz=24");
-        pageUrls.add("https://www.surlatable.com/recipes/?srule=best-matches&start=24&sz=24");
-        pageUrls.add("https://www.surlatable.com/recipes/?srule=best-matches&start=48&sz=24");
-        pageUrls.add("https://www.surlatable.com/recipes/?srule=best-matches&start=72&sz=24");
+   public static void main(String[] args) throws IOException, InterruptedException {
+      ArrayList<ArrayList<String>> recipes = new ArrayList<ArrayList<String>>();
+      ArrayList<String> pageUrls = new ArrayList<String>();
+
+      pageUrls.add("https://www.surlatable.com/recipes/?srule=best-matches&start=0&sz=24");
+      pageUrls.add("https://www.surlatable.com/recipes/?srule=best-matches&start=24&sz=24");
+      pageUrls.add("https://www.surlatable.com/recipes/?srule=best-matches&start=48&sz=24");
+      pageUrls.add("https://www.surlatable.com/recipes/?srule=best-matches&start=72&sz=24");
+      
+      
+      int size1 = 1;
+      int j=0;
         
-        ArrayList<ArrayList<String>> recipes = new ArrayList<ArrayList<String>>();
-        ArrayList<String> filler = new ArrayList<String>(7);
-        
-        int size1 = 3;
-        
-        for(int a=0; a<size1; a++)
-        {
-           recipes.add(filler);
-        }
-        
-        final ReadWebPage scraper = new ReadWebPage();
+      for(int a=0; a<size1; a++)
+      {
+         ArrayList<String> filler = new ArrayList<String>(7);
+         recipes.add(filler);
+      }
+      
+      final ReadWebPage scraper = new ReadWebPage();
         
         for(int i=0; i<pageUrls.size(); i++)
         {
           inputPageUrl = pageUrls.get(i);
           htmlContent = scraper.getContent(inputPageUrl);
           
-          for(int j=0; j<size1; j++)
+          for(; j<size1; j++)
           {
             //get first arraylist and then add recipe url to the filler arraylist 
             recipes.get(j).add(scraper.extractRecipeUrl(htmlContent));
-            //set inputPageUrl to the filler arraylist index that the recipe url was just added to 
-            inputPageUrl = filler.get(j);
-            //get the html content from the individual recipe url 
-            htmlContent = scraper.getContent(inputPageUrl);
-            //from the html content of the individual recipe url, extract the author 
-            author = scraper.extractAuthor(htmlContent);
-            //add author to the filler arraylist 
-            
+            final String recipeContent = scraper.getRecipeContent(recipes.get(i).get(0));
+            recipes.get(i).add(scraper.extractPath(recipeContent, 0));
+            recipes.get(i).add(scraper.extractTitle(recipeContent));
+            recipes.get(i).add(scraper.extractAuthor(recipeContent));
+            recipes.get(i).add(scraper.extractServings(recipeContent));
+            recipes.get(i).add(scraper.extractIngredients(recipeContent));
+            recipes.get(i).add(scraper.extractProcedure(recipeContent));
+
+            if(j==23 || j== 47 || j==71)
+               startx=0;
           }
         }
-       
-       System.out.println(recipes.get(0).get(0));
-       System.out.println(recipes.get(1).get(0));
-       System.out.println(recipes.get(2).get(0));
+        
+      System.out.println(recipes.get(0).get(1));
+      /*System.out.println(recipes.get(0).get(2));
+      System.out.println(recipes.get(0).get(3));
+      System.out.println(recipes.get(0).get(4));
+      System.out.println(recipes.get(0).get(5));*/
 
-    }
+      //System.out.println(recipes.get().get(0));
+      //System.out.println(recipes.get(23).get(0));
+      //System.out.println(recipes.get(0).get(1));
+   }
+        
    
-    private String getContent(String url) throws IOException 
-    {
+   private String getContent(String url) throws IOException 
+   { 
       try
       {
-            HttpClient client = HttpClient.newHttpClient();
-            String urlToScrape = url;
-            HttpRequest request =  HttpRequest.newBuilder().uri(URI.create(urlToScrape)).build();
-            HttpResponse<String> response = client.send(request,HttpResponse.BodyHandlers.ofString());
-           return response.body();
-
-      
+         HttpClient client = HttpClient.newHttpClient();
+         String urlToScrape = url;
+         HttpRequest request =  HttpRequest.newBuilder().uri(URI.create(urlToScrape)).build();
+         HttpResponse<String> response = client.send(request,HttpResponse.BodyHandlers.ofString());
+         return response.body();
       }
       catch (InterruptedException e)
-     {
+      {
          System.out.println(e);
-     }
-     return null;   
-    }
+      }
+      return null;   
+   }
 
-    private String extractRecipeUrl(String content) {
-        final Pattern recipeUrlRegExp = Pattern.compile("<a class=\"thumb-link\" href=\"(.*?)\" title", Pattern.DOTALL);
-        final Matcher matcher = recipeUrlRegExp.matcher(content);
-        matcher.find(startx);
-        startx = matcher.start()+20;
-
-        return matcher.group(1);
-    }
-    
-    //extract the author for each recipe
-    private String extractAuthor(String content) 
-    {
+   private String extractRecipeUrl(String content) 
+   {
+      final Pattern recipeUrlRegExp = Pattern.compile("<a class=\"thumb-link\" href=\"(.*?)\" title", Pattern.DOTALL);
+      final Matcher matcher = recipeUrlRegExp.matcher(content);
+      matcher.find(startx);
+      startx = matcher.start()+20;
+      
+      return matcher.group(1);
+   }
+   
+   private String getRecipeContent(String recipe) throws IOException
+   {
+      try
+      {
+        HttpClient client = HttpClient.newHttpClient();
+        String urlToScrape = recipe;
+        HttpRequest request =  HttpRequest.newBuilder().uri(URI.create(urlToScrape)).build();
+        HttpResponse<String> response = client.send(request,HttpResponse.BodyHandlers.ofString());
+        return response.body();      
+      }
+      catch (InterruptedException e)
+      {
+        System.out.println(e);
+      }
+      return null;   
+   }
+      
+   //extract the author for each recipe
+   private String extractAuthor(String content) 
+   {
       //retrieve author 
       final Pattern authorRegExp = Pattern.compile("<div class=\"recipe-author\">\n(.*?)\n</div>", Pattern.DOTALL);
       final Matcher matcher = authorRegExp.matcher(content);
@@ -102,36 +126,62 @@ public class ReadWebPage
       return matcher.group(1);
     }
     
-    //extract the servings for each recipe 
-    private String extractServings(String content) 
+    private String extractTitle(String content)
     {
-      //retrieve servings 
-      final Pattern servingsRegExp = Pattern.compile("<div class=\"recipe-details-serves\">\nMakes (.*?) servings\n</div>", Pattern.DOTALL);
+      //retrieve Title 
+      final Pattern authorRegExp = Pattern.compile("<title>(.*?)</title>", Pattern.DOTALL);
+      final Matcher matcher = authorRegExp.matcher(content);
+      matcher.find();
+      return matcher.group(1);
+    }
+    //extract the servings for each recipe 
+    private String extractIngredients(String content) 
+    {
+      final Pattern servingsRegExp = Pattern.compile("<div class=\"recipe-details-ingredients\">\n(.*?)\n</div>", Pattern.DOTALL);
       final Matcher matcher = servingsRegExp.matcher(content);
       matcher.find();
       return matcher.group(1);
     }
     
-    //extract ingredients for each recipe
-    private String extractIngredients(String content) 
+    //retreive Procedure
+    private String extractProcedure(String content)
     {
-      //retrieve ingredients 
-      final Pattern ingredientsRegExp = Pattern.compile("<div class=\"recipe-details-serves\">\nMakes (.*?) servings\n</div>", Pattern.DOTALL);
-      final Matcher matcher = ingredientsRegExp.matcher(content);
+      final Pattern servingsRegExp = Pattern.compile("<div class=\"recipe-details-procedure\">\n(.*?)\n</div>", Pattern.DOTALL);
+      final Matcher matcher = servingsRegExp.matcher(content);
       matcher.find();
       return matcher.group(1);
     }
     
-    
-    
-    //extract the path for each recipe
-    private String extractPath(String content) 
+    //retreieve Serving Size
+    private String extractServings(String content)
     {
-      //retrieve path 
-      final Pattern pathRegExp = Pattern.compile("<a class=\"breadcrumb-element\" href=\"https://www.surlatable.com/home\" title=\"Go to Home\">(.*?)</a>", Pattern.DOTALL);
+      final Pattern servingsRegExp = Pattern.compile("<div class=\"recipe-details-serves\">\n(.*?)\n</div>", Pattern.DOTALL);
+      final Matcher matcher = servingsRegExp.matcher(content);
+      matcher.find();
+      return matcher.group(1);
+    }
+    
+    private String extractPath(String content, int startz)
+    {
+      final Pattern pathRegExp = Pattern.compile("<a class=\"breadcrumb-element\" href=\".*?\" title=\".*?\">(.*?) </a>", Pattern.DOTALL);
+      String path = "";
       final Matcher matcher = pathRegExp.matcher(content);
-      matcher.find();
-      return matcher.group(1);
-    }
+      
+      for(int i=0; i<3; i++)
+      {
+         matcher.find(startz);
+         path += matcher.group(1);
+         startz = matcher.start()+5;
+      }
 
+      path += group1 + "/" ;
+
+         //servingsRegExp = Pattern.compile("\"primaryCategory\":\"(.*?)\"", Pattern.DOTALL);
+     
+      return path;
+    }
+   
+      
+      
+    
 }
