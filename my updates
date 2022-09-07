@@ -163,15 +163,17 @@ public class ReadWebPage
     
     private String extractPath(String content, int startz)
     {
-      final Pattern pathRegExp = Pattern.compile("<a class=\"breadcrumb-element\" href=\".*?\" title=\".*?\">(.*?) </a>", Pattern.DOTALL);
+      final Pattern pathRegExp = Pattern.compile("<a class=\"breadcrumb-element\" href=\".*?\" title=\".*?\">(.*?)</a>", Pattern.DOTALL);
       String path = "";
+      String group1 = "";
       final Matcher matcher = pathRegExp.matcher(content);
       
-      for(int i=0; i<3; i++)
+      for(int i=0; i<4; i++)
       {
+         System.out.println(startz);
          matcher.find(startz);
-         path += matcher.group(1);
-         startz = matcher.start()+5;
+         group1 = matcher.group(1);
+         startz = matcher.start()+50;
       }
 
       path += group1 + "/" ;
