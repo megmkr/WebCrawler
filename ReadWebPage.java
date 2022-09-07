@@ -15,6 +15,7 @@ import java.lang.Thread;
 public class ReadWebPage 
 {
    public static int startx = 0;
+   //public static int startz = 0;
    public static String inputPageUrl;
    public static String htmlContent;
    
@@ -56,7 +57,7 @@ public class ReadWebPage
             recipes.get(j).add(scraper.extractRecipeUrl(htmlContent));
             final String recipeContent = scraper.getRecipeContent(recipes.get(j).get(0));
             recipes.get(j).add(scraper.extractTitle(recipeContent));
-            recipes.get(j).add(scraper.extractPath(recipeContent));
+            recipes.get(j).add(scraper.extractPath(recipeContent, 0));
             recipes.get(j).add(scraper.extractAuthor(recipeContent));
             recipes.get(j).add(scraper.extractServings(recipeContent));
             recipes.get(j).add(scraper.extractIngredients(recipeContent));
@@ -65,7 +66,7 @@ public class ReadWebPage
             if(j==23 || j== 47 || j==71)
                startx=0;
             
-            Thread.sleep(10000);
+            //Thread.sleep(10000);
           }
         }
         
@@ -106,6 +107,7 @@ public class ReadWebPage
             toAdd = toAdd.replaceAll("&#189;","½");
             toAdd = toAdd.replaceAll("&#8539;","⅛");
             toAdd = toAdd.replaceAll("&#176;","°");
+            toAdd = toAdd.replaceAll("&amp;","&");
             file.append(toAdd);
             file.append(DELIMITER);
 
@@ -211,14 +213,33 @@ public class ReadWebPage
       return matcher.group(1);
     }
     
-    private String extractPath(String content)
+    private String extractPath(String content, int startz)
     {
-      //final Pattern servingsRegExp = Pattern.compile("title=\"Go to(.*?)\">", Pattern.DOTALL);
-      //final Matcher matcher = servingsRegExp.matcher(content);
-      //matcher.find();
-      String path = "Home/Recipes/" ;
-      //servingsRegExp = Pattern.compile("\"primaryCategory\":\"(.*?)\"", Pattern.DOTALL);
-   
+      Pattern pathRegExp = Pattern.compile("<a class=\"breadcrumb-element\" href=\".*?\" title=\".*?\">(.*?)</a>", Pattern.DOTALL);
+      String group1 = "";
+      String group2 = "";
+      String path = "";
+      Matcher matcher = pathRegExp.matcher(content);
+      
+      for(int i=0; i<4; i++)
+      {
+         //System.out.println(startz);
+         matcher.find(startz);
+         group1 += matcher.group(1) + "/";
+         startz = matcher.start()+50;
+      }
+      path += group1;
+      
+      pathRegExp = Pattern.compile("<span class=\"breadcrumb-element\">(.*?)</span>", Pattern.DOTALL);
+      matcher = pathRegExp.matcher(content);
+      
+      matcher.find();
+      group2 = matcher.group(1);
+      
+
+      path += group2 ;
+
+     
       return path;
     }
    
