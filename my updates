@@ -14,29 +14,36 @@ import java.lang.Thread;
 
 public class ReadWebPage 
 {
+   //variable to keep track of where scraping should start on main recipe page
    public static int startx = 0;
+   //string for main page url
    public static String inputPageUrl;
-   //public static String htmlContent;
    
+   //exporting to csv, delimiter, separator
    private static final String DELIMITER = "\t";
    private static final String SEPARATOR = "\n";
     
-    //File header
-    private static final String HEADER = "Title\tPath\tAuthor\tServings\tIngredients\tProcedure";
+   //File header
+   private static final String HEADER = "Title\tPath\tAuthor\tServings\tIngredients\tProcedure";
        
    public static void main(String[] args) throws IOException, InterruptedException {
+      //2d arraylist for recipe list and arraylist for the 4 main recipe pages
       ArrayList<ArrayList<String>> recipes = new ArrayList<ArrayList<String>>();
       ArrayList<String> pageUrls = new ArrayList<String>();
 
+      //fill the main page arraylist
       pageUrls.add("https://www.surlatable.com/recipes/?srule=best-matches&start=0&sz=24");
       pageUrls.add("https://www.surlatable.com/recipes/?srule=best-matches&start=24&sz=24");
       pageUrls.add("https://www.surlatable.com/recipes/?srule=best-matches&start=48&sz=24");
       pageUrls.add("https://www.surlatable.com/recipes/?srule=best-matches&start=72&sz=24");
       
       
+      //amount of recipes to scan per page
       int totalRecipes = 24;
+      //what recipe we are currently copying to 2d arraylist
       int recipeNumber=0;
-        
+      
+      //fill 2d arraylist
       for(int a=0; a<96; a++)
       {
          ArrayList<String> filler = new ArrayList<String>(7);
@@ -49,7 +56,6 @@ public class ReadWebPage
         {
           String inputPageUrl = pageUrls.get(i);
           String htmlContent = scraper.getContent(inputPageUrl);
-          //System.out.println(htmlContent);
           
           for(; recipeNumber<totalRecipes; recipeNumber++)
           {
@@ -57,7 +63,6 @@ public class ReadWebPage
                startx=0; 
             //get first arraylist and then add recipe url to the filler arraylist 
             recipes.get(recipeNumber).add(scraper.extractRecipeUrl(htmlContent));
-            //System.out.println(scraper.extractRecipeUrl(htmlContent));
             final String recipeContent = scraper.getRecipeContent(recipes.get(recipeNumber).get(0));
             recipes.get(recipeNumber).add(scraper.extractTitle(recipeContent));
             recipes.get(recipeNumber).add(scraper.extractPath(recipeContent, 0));
@@ -68,14 +73,11 @@ public class ReadWebPage
 
               
             
-            //Thread.sleep(10000);
+            Thread.sleep(10000);
           }
          totalRecipes+=24;
           
-          //System.out.println(pageUrls.get(i));
         }
-         //System.out.println(recipeNumber);
-         //System.out.println(recipes.get(25).get(0));
          
       FileWriter file = null;
       
@@ -144,8 +146,6 @@ public class ReadWebPage
         e.printStackTrace();
       }
       
-    System.out.println(recipes.get(87).get(5));
-
    }
         
    
