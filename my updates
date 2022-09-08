@@ -12,7 +12,7 @@ import java.util.*;
 import java.lang.String;
 import java.lang.Thread;
 
-//**NOTE TO TAs/DR MOOD - Please change the default delimiter to be "\t" in Excel when opening the csv, thank you!**
+//**NOTE TO TAs/DR MOOD - Please change the default delimiter to be "\t" in Excel (or Numbers) when opening the csv, thank you!**
 
 public class ReadWebPage 
 {
