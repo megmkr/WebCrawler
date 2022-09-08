@@ -68,14 +68,14 @@ public class ReadWebPage
 
               
             
-            Thread.sleep(10000);
+            //Thread.sleep(10000);
           }
          totalRecipes+=24;
           
           //System.out.println(pageUrls.get(i));
         }
          //System.out.println(recipeNumber);
-         System.out.println(recipes.get(25).get(0));
+         //System.out.println(recipes.get(25).get(0));
          
       FileWriter file = null;
       
@@ -108,7 +108,6 @@ public class ReadWebPage
             toAdd = toAdd.replaceAll("&rsquo;","'");
             toAdd = toAdd.replaceAll("<span style=\"font-size:12pt\">"," ");
             toAdd = toAdd.replaceAll("<span style=\"font-size:12.0pt\">"," ");
-            toAdd = toAdd.replaceAll("</span><br />"," ");
             toAdd = toAdd.replaceAll("&nbsp"," ");
             toAdd = toAdd.replaceAll("<span style=\"color:#000000\">"," ");
             toAdd = toAdd.replaceAll("<strong>"," ");
@@ -144,6 +143,9 @@ public class ReadWebPage
       {
         e.printStackTrace();
       }
+      
+    System.out.println(recipes.get(87).get(5));
+
    }
         
    
@@ -228,7 +230,9 @@ public class ReadWebPage
       try{  
          matcher.find();
          removeLines = matcher.group(1);
-         removeLines = removeLines.replaceAll("\n", " ");
+         removeLines = removeLines.replaceAll("\r", "").replaceAll("\n", "");
+
+
          return removeLines;
       }catch(IllegalStateException ISE){
          return "";
@@ -245,7 +249,9 @@ public class ReadWebPage
       try{
          matcher.find();
          removeLines2 = matcher.group(1);
-         removeLines2 = removeLines2.replaceAll("\n", " ");
+         removeLines2 = removeLines2.replaceAll("\r", "").replaceAll("\n", "");
+
+
          return removeLines2;
       }catch(IllegalStateException ISE){
          return "";
