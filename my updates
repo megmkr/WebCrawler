@@ -12,6 +12,8 @@ import java.util.*;
 import java.lang.String;
 import java.lang.Thread;
 
+//**NOTE TO TAs/DR MOOD - Please change the default delimiter to be "\t" in Excel when opening the csv, thank you!**
+
 public class ReadWebPage 
 {
    //variable to keep track of where scraping should start on main recipe page
