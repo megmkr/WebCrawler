@@ -68,7 +68,7 @@ public class ReadWebPage
 
               
             
-           // Thread.sleep(10000);
+            Thread.sleep(10000);
           }
          totalRecipes+=24;
           
